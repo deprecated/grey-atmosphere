@@ -1,0 +1,158 @@
+* Milne equation for flux in gray atmosphere
+** Definitions
++ \alpha = h\nu/kT_{eff}
++ H_{\alpha} = H_{\nu} d\nu/d\alpha
++ p(\tau) = T_{ef}/T(\tau)
+** Eddington approximation for T(\tau) of gray atmosphere
++ T(\tau) = (3/4)^{1/4}^{}  T_{ef} (\tau + 2/3)^{1/4}
++ p(\tau) = (4/3)^{1/4}^{} (\tau + 2/3)^{-1/4}
+** Flux integral from Milne equation
++ H_{\alpha}(\tau)/H = c\prime\alpha^3 [ \int_{\tau}^{\infty} dt E_2(t - \tau) / (e^{\alpha{}p(\tau)}^{} - 1) -  \int_{0}_{}^{}^{\tau} dt E_2(\tau - t) / (e^{\alpha{}p(\tau)}^{} - 1) ]
++ Constant c\prime = 4\pi k^{4} / h^{3} c^{2} \sigma
++ Numerically, c\prime = 4 3.1415926535897932385e0 1.3806503e-16**4 / 6.62606876e-27**3 2.99792458e10**2 5.6703e-5 = 0.308
+
+** Normalized Planck function B_{\alpha}[T(\tau)]/B[T(\tau)]
++ B_{\alpha}/B = (kT_{eff} / h) (2 h \nu^{3} / c^2) (1 / \sigma T_{eff}^{4}) p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
+  + = k T_{eff} 2 h k^{3} T_{eff}^{3} \alpha^{3} p(\tau)^{4} / h h^{3} c^2 \sigma T_{eff}^{4} (e^{\alpha{}p(\tau)}^{} - 1)^{}
+  + = (2 k^{4} / h^{3} c^2 \sigma) \alpha^{3} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
+  + = (c\prime/2\pi) \alpha^{3}  p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)
++ Alternatively, use B_{\alpha}/H like Alan does:
+  + B(\tau) = 3 H (\tau + 2/3)
+  + 1/p(\tau)^{4} = (3/4) (\tau + 2/3)
+    + \Rightarrow (\tau + 2/3) = (4/3)/p(\tau)^{4} 
+  + B(\tau) = 4 H / p(\tau)^{4}
+  + \Rightarrow B_{\alpha}/H = (B_{\alpha}/B) (B/H) = (B_{\alpha}/B) (4/p(\tau)^{4}) = (2c\prime/\pi) \alpha^{3 }/ (e^{\alpha{}p(\tau)}^{} - 1) 
+
+** Running python program
+#+BEGIN_SRC sh :results verbatim
+time python ./fluxes.py 
+#+END_SRC
+
+#+RESULTS:
+: 0.0 0.840896415254
+: 1.0 1.05737126344
+: 2.0 1.189207115
+: 4.0 1.36778239987
+: 8.0 1.59671843379
+
+[[./fluxes.pdf]]
+** Implementation in python, =fluxes.py=
+:PROPERTIES:
+:tangle:   fluxes.py
+:END:
+
+
+*** Import libraries
+#+BEGIN_SRC python
+import numpy as np
+from numpy import exp, pi
+from scipy.special import expn
+from scipy.integrate import romberg, quad
+import matplotlib.pyplot as plt
+#+END_SRC
+*** Define functions
+**** Reciprocal temperature, p(\tau) \equiv T_{ef}/T(\tau)
+From the Eddington approx solution to gray atmosphere, p(\tau) = (4/3)^{1/4}^{} (\tau + 2/3)^{-1/4} = (4/(3\tau + 2))^{1/4}
+#+BEGIN_SRC python
+  def p(tau):
+      return (4.0 / (3.0*tau + 2.0))**0.25
+#+END_SRC
+**** Normalized Planck function
+First, normalized by its own frequency integral B_{\alpha}/B
+#+BEGIN_SRC python
+CONSTANT = 0.308
+CONSTANT = 4.0 * pi * 1.3806503e-16**4 / (
+    6.62606876e-27**3 * 2.99792458e10**2 * 5.6703e-5)
+def planck(alpha, tau):
+    return (0.5*CONSTANT/pi) * alpha**3 * p(tau)**4 / (exp(alpha*p(tau)) - 1.0)
+#+END_SRC
+Second, normalized by the flux B_{\alpha}/H
+#+BEGIN_SRC python
+def planck_H(alpha, tau):
+    return (2.0*CONSTANT/pi) * alpha**3 / (exp(alpha*p(tau)) - 1.0)
+#+END_SRC
+**** Integrand in Milne equation
+By taking the absolute value of (t - \tau), we can use the same function for the upward and downward flux contributions. 
+#+BEGIN_SRC python
+def milne_integrand(t, alpha, tau):
+    return expn(2, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+#+END_SRC
+
+
+**** Downward Milne integral
+Negative contribution to flux from downward-moving photons.  
+#+BEGIN_SRC python
+def downward_milne(alpha, tau):
+    result, error = quad(milne_integrand, 0.0, tau, args=(alpha, tau))
+    return result
+#+END_SRC
+
+
+**** Upward Milne integral
+Even though the upper limit is t=\infty, the =quad= routine from =scipy.integrate=, which is a wrapper for routines from the Fortran library QUADPACK, can still cope. 
+#+BEGIN_SRC python
+def upward_milne(alpha, tau):
+    result, error = quad(milne_integrand, tau, np.infty, args=(alpha, tau))
+    return result
+#+END_SRC
+
+**** COMMENT OLD VERSION Upward Milne integral
+:PROPERTIES:
+:tangle:   no
+:END:
+
+Positive contribution to flux from upward-moving photons.
+This is trickier since one of the integration limits (t=\tau \to t=\infty) is infinite. 
+We deal with that by transforming from t to w \equiv 1/t: 
+#+BEGIN_SRC python
+def milne_integrand_w(w, alpha, tau):
+    dt_dw = -1.0/w**2
+    return dt_dw*milne_integrand(1./w, alpha, tau)
+#+END_SRC
+So we can now do the integration from w=1/\tau \to w=0, but we have to protect against \tau=0, since that would make the lower limit in w infinite.  
+#+BEGIN_SRC python
+def upward_milne(alpha, tau):
+    return romberg(milne_integrand_w, 1.0/tau, 0.0, args=(alpha, tau), vec_func=True)
+#+END_SRC
+
+**** Normalized flux, H_{\alpha}/H
+Putting it all together: 
+#+BEGIN_SRC python
+def flux(alpha, tau):
+    result = upward_milne(alpha, tau)
+    if tau > 0.0:
+        result -= downward_milne(alpha, tau)
+    result *= CONSTANT * alpha**3
+    return result
+#+END_SRC
+
+*** Graph for \tau = 0, 1, 2, 4, 8
+#+BEGIN_SRC python
+def find_fluxes(alphas, tau):
+    fluxes = []
+    for alpha in alphas:
+        fluxes.append(flux(alpha, tau))
+    return np.array(fluxes)
+
+def make_graph():
+    alpha_pts = np.linspace(0.0, 12.0, 200)
+    for tau, color in zip([0.0, 1.0, 2.0, 4.0, 8.0], "bgrcm"):
+        T = 1./p(tau)
+        print tau, T
+        flux_pts = find_fluxes(alpha_pts, tau)
+        plt.plot(alpha_pts, flux_pts, "-" + color, 
+                 label="H_alpha/H, tau = {}, T = {:.2f} T_ef".format(int(tau), T))
+        plt.plot(alpha_pts, planck(alpha_pts, tau), "--" + color)
+    plt.plot(alpha_pts, planck_H(alpha_pts, 2./3.), ":k",
+             label="B_alpha(T_ef)/H")
+    plt.legend(fontsize="x-small")
+    plt.xlabel("alpha")
+    plt.ylabel("Flux")
+    plt.savefig("fluxes.pdf")
+#+END_SRC
+
+*** Driver
+#+BEGIN_SRC python
+if __name__ == "__main__":
+    make_graph()
+#+END_SRC
