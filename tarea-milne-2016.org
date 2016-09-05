@@ -11,6 +11,11 @@
 + Constant c\prime = 4\pi k^{4} / h^{3} c^{2} \sigma
 + Numerically, c\prime = 4 3.1415926535897932385e0 1.3806503e-16**4 / 6.62606876e-27**3 2.99792458e10**2 5.6703e-5 = 0.308
 
+** Mean intensity integral from the Schwarzschild equation
++ J_{\alpha}(\tau)/H = c\prime\alpha^3 [ \int_{\tau}^{\infty} dt E_1(t - \tau) / (e^{\alpha{}p(\tau)}^{} - 1) +  \int_{0}_{}^{}^{\tau} dt E_1(\tau - t) / (e^{\alpha{}p(\tau)}^{} - 1) ]
++ Constant c\prime = 4\pi k^{4} / h^{3} c^{2} \sigma
++ Numerically, c\prime = 4 3.1415926535897932385e0 1.3806503e-16**4 / 6.62606876e-27**3 2.99792458e10**2 5.6703e-5 = 0.308
+
 ** Normalized Planck function B_{\alpha}[T(\tau)]/B[T(\tau)]
 + B_{\alpha}/B = (kT_{eff} / h) (2 h \nu^{3} / c^2) (1 / \sigma T_{eff}^{4}) p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
   + = k T_{eff} 2 h k^{3} T_{eff}^{3} \alpha^{3} p(\tau)^{4} / h h^{3} c^2 \sigma T_{eff}^{4} (e^{\alpha{}p(\tau)}^{} - 1)^{}
@@ -29,13 +34,14 @@ time python ./fluxes.py
 #+END_SRC
 
 #+RESULTS:
-: 0.0 0.8408964152537146
-: 1.0 1.057371263440564
-: 2.0 1.189207115002721
-: 4.0 1.3677823998673804
-: 8.0 1.59671843378737
+: tau = 0.0 T = 0.84 F = 0.49982 B = 0.31819
+: tau = 1.0 T = 1.06 F = 0.27327 B = 0.31720
+: tau = 2.0 T = 1.19 F = 0.11946 B = 0.31547
+: tau = 4.0 T = 1.37 F = 0.01889 B = 0.31099
+: tau = 8.0 T = 1.60 F = 0.00038 B = 0.30109
 
 [[./fluxes.pdf]]
+
 ** Implementation in python, =fluxes.py=
 :PROPERTIES:
 :tangle:   fluxes.py
@@ -83,8 +89,8 @@ def milne_integrand(t, alpha, tau):
 **** Downward Milne integral
 Negative contribution to flux from downward-moving photons.  
 #+BEGIN_SRC python
-def downward_milne(alpha, tau):
-    result, error = quad(milne_integrand, 0.0, tau, args=(alpha, tau))
+def downward(alpha, tau, integrand=milne_integrand):
+    result, error = quad(integrand, 0.0, tau, args=(alpha, tau))
     return result
 #+END_SRC
 
@@ -92,8 +98,8 @@ def downward_milne(alpha, tau):
 **** Upward Milne integral
 Even though the upper limit is t=\infty, the =quad= routine from =scipy.integrate=, which is a wrapper for routines from the Fortran library QUADPACK, can still cope. 
 #+BEGIN_SRC python
-def upward_milne(alpha, tau):
-    result, error = quad(milne_integrand, tau, np.infty, args=(alpha, tau))
+def upward(alpha, tau, integrand=milne_integrand):
+    result, error = quad(integrand, tau, np.infty, args=(alpha, tau))
     return result
 #+END_SRC
 
@@ -122,11 +128,25 @@ def upward_milne(alpha, tau):
 Putting it all together: 
 #+BEGIN_SRC python
 def flux(alpha, tau):
-    result = upward_milne(alpha, tau)
+    result = upward(alpha, tau)
     if tau > 0.0:
-        result -= downward_milne(alpha, tau)
+        result -= downward(alpha, tau)
     result *= CONSTANT * alpha**3
     return result
+#+END_SRC
+
+*** TODO Do the Schwarzschild integrals for mean intensity too
+#+BEGIN_SRC python
+  def schwarz_integrand(t, alpha, tau):
+      return expn(1, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+
+  def meanJ(alpha, tau):
+      result = upward(alpha, tau, integrand=schwarz_integrand)
+      if tau > 0.0:
+          # Plus sign here, unlike for the flux 
+          result += downward(alpha, tau, integrand=schwarz_integrand)
+      result *= CONSTANT * alpha**3
+      return result
 #+END_SRC
 
 *** Graph for \tau = 0, 1, 2, 4, 8
@@ -141,8 +161,11 @@ def make_graph():
     alpha_pts = np.linspace(0.0, 12.0, 200)
     for tau, color in zip([0.0, 1.0, 2.0, 4.0, 8.0], "bgrcm"):
         T = 1./p(tau)
-        print(tau, T)
         flux_pts = find_fluxes(alpha_pts, tau)
+        m = np.isfinite(flux_pts)
+        flux_bolo = np.trapz(flux_pts[m], alpha_pts[m])
+        plank_bolo = np.trapz(planck(alpha_pts[m], tau), alpha_pts[m])
+        print('tau = {:.1f} T = {:.2f} F = {:.5f} B = {:.5f}'.format(tau, T, flux_bolo, plank_bolo))
         plt.plot(alpha_pts, flux_pts, "-" + color, 
                  label="H_alpha/H, tau = {}, T = {:.2f} T_ef".format(int(tau), T))
         plt.plot(alpha_pts, planck(alpha_pts, tau), "--" + color)

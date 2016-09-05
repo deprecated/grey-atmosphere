@@ -19,18 +19,29 @@ def planck_H(alpha, tau):
 def milne_integrand(t, alpha, tau):
     return expn(2, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
 
-def downward_milne(alpha, tau):
-    result, error = quad(milne_integrand, 0.0, tau, args=(alpha, tau))
+def downward(alpha, tau, integrand=milne_integrand):
+    result, error = quad(integrand, 0.0, tau, args=(alpha, tau))
     return result
 
-def upward_milne(alpha, tau):
-    result, error = quad(milne_integrand, tau, np.infty, args=(alpha, tau))
+def upward(alpha, tau, integrand=milne_integrand):
+    result, error = quad(integrand, tau, np.infty, args=(alpha, tau))
     return result
 
 def flux(alpha, tau):
-    result = upward_milne(alpha, tau)
+    result = upward(alpha, tau)
     if tau > 0.0:
-        result -= downward_milne(alpha, tau)
+        result -= downward(alpha, tau)
+    result *= CONSTANT * alpha**3
+    return result
+
+def schwarz_integrand(t, alpha, tau):
+    return expn(1, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+
+def meanJ(alpha, tau):
+    result = upward(alpha, tau, integrand=schwarz_integrand)
+    if tau > 0.0:
+        # Plus sign here, unlike for the flux 
+        result += downward(alpha, tau, integrand=schwarz_integrand)
     result *= CONSTANT * alpha**3
     return result
 
@@ -44,8 +55,11 @@ def make_graph():
     alpha_pts = np.linspace(0.0, 12.0, 200)
     for tau, color in zip([0.0, 1.0, 2.0, 4.0, 8.0], "bgrcm"):
         T = 1./p(tau)
-        print(tau, T)
         flux_pts = find_fluxes(alpha_pts, tau)
+        m = np.isfinite(flux_pts)
+        flux_bolo = np.trapz(flux_pts[m], alpha_pts[m])
+        plank_bolo = np.trapz(planck(alpha_pts[m], tau), alpha_pts[m])
+        print('tau = {:.1f} T = {:.2f} F = {:.5f} B = {:.5f}'.format(tau, T, flux_bolo, plank_bolo))
         plt.plot(alpha_pts, flux_pts, "-" + color, 
                  label="H_alpha/H, tau = {}, T = {:.2f} T_ef".format(int(tau), T))
         plt.plot(alpha_pts, planck(alpha_pts, tau), "--" + color)
