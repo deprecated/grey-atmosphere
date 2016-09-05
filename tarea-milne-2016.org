@@ -29,11 +29,11 @@ time python ./fluxes.py
 #+END_SRC
 
 #+RESULTS:
-: 0.0 0.840896415254
-: 1.0 1.05737126344
-: 2.0 1.189207115
-: 4.0 1.36778239987
-: 8.0 1.59671843379
+: 0.0 0.8408964152537146
+: 1.0 1.057371263440564
+: 2.0 1.189207115002721
+: 4.0 1.3677823998673804
+: 8.0 1.59671843378737
 
 [[./fluxes.pdf]]
 ** Implementation in python, =fluxes.py=
@@ -50,6 +50,7 @@ from scipy.special import expn
 from scipy.integrate import romberg, quad
 import matplotlib.pyplot as plt
 #+END_SRC
+
 *** Define functions
 **** Reciprocal temperature, p(\tau) \equiv T_{ef}/T(\tau)
 From the Eddington approx solution to gray atmosphere, p(\tau) = (4/3)^{1/4}^{} (\tau + 2/3)^{-1/4} = (4/(3\tau + 2))^{1/4}
@@ -96,6 +97,7 @@ def upward_milne(alpha, tau):
     return result
 #+END_SRC
 
+
 **** COMMENT OLD VERSION Upward Milne integral
 :PROPERTIES:
 :tangle:   no
@@ -114,6 +116,7 @@ So we can now do the integration from w=1/\tau \to w=0, but we have to protect a
 def upward_milne(alpha, tau):
     return romberg(milne_integrand_w, 1.0/tau, 0.0, args=(alpha, tau), vec_func=True)
 #+END_SRC
+
 
 **** Normalized flux, H_{\alpha}/H
 Putting it all together: 
@@ -138,7 +141,7 @@ def make_graph():
     alpha_pts = np.linspace(0.0, 12.0, 200)
     for tau, color in zip([0.0, 1.0, 2.0, 4.0, 8.0], "bgrcm"):
         T = 1./p(tau)
-        print tau, T
+        print(tau, T)
         flux_pts = find_fluxes(alpha_pts, tau)
         plt.plot(alpha_pts, flux_pts, "-" + color, 
                  label="H_alpha/H, tau = {}, T = {:.2f} T_ef".format(int(tau), T))
