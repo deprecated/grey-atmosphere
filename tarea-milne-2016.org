@@ -1,5 +1,6 @@
-* TODO Future plans
-+ [ ] Convert all this to jupyter notebook
+* DONE Future plans
+CLOSED: [2016-09-06 Tue 13:29]
++ [X] Convert all this to jupyter notebook
  
 * Milne equation for flux in gray atmosphere
 ** Definitions
@@ -146,7 +147,8 @@ def flux(alpha, tau):
     return result
 #+END_SRC
 
-*** TODO Do the Schwarzschild integrals for mean intensity too
+*** DONE Do the Schwarzschild integrals for mean intensity too
+CLOSED: [2016-09-06 Tue 13:29]
 #+BEGIN_SRC python
   def schwarz_integrand(t, alpha, tau):
       return expn(1, np.abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
