@@ -17,7 +17,7 @@ def planck_H(alpha, tau):
     return (2.0*CONSTANT/pi) * alpha**3 / (exp(alpha*p(tau)) - 1.0)
 
 def milne_integrand(t, alpha, tau):
-    return expn(2, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+    return expn(2, np.abs(t - tau)) / (exp(alpha*p(t)) - 1.0)
 
 def downward(alpha, tau, integrand=milne_integrand):
     result, error = quad(integrand, 0.0, tau, args=(alpha, tau))
@@ -35,7 +35,7 @@ def flux(alpha, tau):
     return result
 
 def schwarz_integrand(t, alpha, tau):
-    return expn(1, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+    return expn(1, np.abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
 
 def meanJ(alpha, tau):
     result = upward(alpha, tau, integrand=schwarz_integrand)

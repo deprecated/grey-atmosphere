@@ -45,11 +45,11 @@ time python ./fluxes.py
 #+END_SRC
 
 #+RESULTS:
-: tau = 0.0 T = 0.84 F = 0.49982 B = 0.31819
-: tau = 1.0 T = 1.06 F = 0.27327 B = 0.31720
-: tau = 2.0 T = 1.19 F = 0.11946 B = 0.31547
-: tau = 4.0 T = 1.37 F = 0.01889 B = 0.31099
-: tau = 8.0 T = 1.60 F = 0.00038 B = 0.30109
+: tau = 0.0 T = 0.84 F = 0.99520 B = 0.31819
+: tau = 1.0 T = 1.06 F = 0.96702 B = 0.31720
+: tau = 2.0 T = 1.19 F = 0.96583 B = 0.31547
+: tau = 4.0 T = 1.37 F = 0.94079 B = 0.31099
+: tau = 8.0 T = 1.60 F = 0.87933 B = 0.30109
 
 [[./fluxes.pdf]]
 
@@ -93,7 +93,7 @@ def planck_H(alpha, tau):
 By taking the absolute value of (t - \tau), we can use the same function for the upward and downward flux contributions. 
 #+BEGIN_SRC python
 def milne_integrand(t, alpha, tau):
-    return expn(2, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+    return expn(2, np.abs(t - tau)) / (exp(alpha*p(t)) - 1.0)
 #+END_SRC
 
 
@@ -149,7 +149,7 @@ def flux(alpha, tau):
 *** TODO Do the Schwarzschild integrals for mean intensity too
 #+BEGIN_SRC python
   def schwarz_integrand(t, alpha, tau):
-      return expn(1, abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
+      return expn(1, np.abs(t - tau)) / (exp(alpha*p(tau)) - 1.0)
 
   def meanJ(alpha, tau):
       result = upward(alpha, tau, integrand=schwarz_integrand)
