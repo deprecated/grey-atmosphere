@@ -1,3 +1,6 @@
+* TODO Future plans
++ [ ] Convert all this to jupyter notebook
+ 
 * Milne equation for flux in gray atmosphere
 ** Definitions
 + \alpha = h\nu/kT_{eff}
@@ -17,16 +20,24 @@
 + Numerically, c\prime = 4 3.1415926535897932385e0 1.3806503e-16**4 / 6.62606876e-27**3 2.99792458e10**2 5.6703e-5 = 0.308
 
 ** Normalized Planck function B_{\alpha}[T(\tau)]/B[T(\tau)]
-+ B_{\alpha}/B = (kT_{eff} / h) (2 h \nu^{3} / c^2) (1 / \sigma T_{eff}^{4}) p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
-  + = k T_{eff} 2 h k^{3} T_{eff}^{3} \alpha^{3} p(\tau)^{4} / h h^{3} c^2 \sigma T_{eff}^{4} (e^{\alpha{}p(\tau)}^{} - 1)^{}
-  + = (2 k^{4} / h^{3} c^2 \sigma) \alpha^{3} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
-  + = (c\prime/2\pi) \alpha^{3}  p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)
++ B_{\alpha}/B = (kT_{eff} / h) (2 h \nu^{3} / c^2) (\pi / \sigma T_{eff}^{4}) p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
+  + = k T_{eff} 2 h k^{3} \pi T_{eff}^{3} \alpha^{3} p(\tau)^{4} / h h^{3} c^2 \sigma T_{eff}^{4} (e^{\alpha{}p(\tau)}^{} - 1)^{}
+  + = (2 \pi k^{4} / h^{3} c^2 \sigma) \alpha^{3} / (e^{\alpha{}p(\tau)}^{} - 1)^{}
+  + = (c\prime/2) \alpha^{3}  p(\tau)^{4} / (e^{\alpha{}p(\tau)}^{} - 1)
 + Alternatively, use B_{\alpha}/H like Alan does:
   + B(\tau) = 3 H (\tau + 2/3)
-  + 1/p(\tau)^{4} = (3/4) (\tau + 2/3)
+  + 4/p(\tau)^{4} = 3 (\tau + 2/3)
     + \Rightarrow (\tau + 2/3) = (4/3)/p(\tau)^{4} 
-  + B(\tau) = 4 H / p(\tau)^{4}
-  + \Rightarrow B_{\alpha}/H = (B_{\alpha}/B) (B/H) = (B_{\alpha}/B) (4/p(\tau)^{4}) = (2c\prime/\pi) \alpha^{3 }/ (e^{\alpha{}p(\tau)}^{} - 1) 
+  + B(\tau) = H / p(\tau)^{4}
+  + \Rightarrow B_{\alpha}/H = (B_{\alpha}/B) (B/H) = (B_{\alpha}/B) (4/p(\tau)^{4}) = (c\prime/2\pi) \alpha^{3 }/ (e^{\alpha{}p(\tau)}^{} - 1) 
+
+
+** Checking the boundary conditions
++ At the surface, \tau = 0:
+  + 1/p(0)^{4} = 1/2
+  + 
++ At the photosphere, \tau = 2/3:
+  + 1/p(2/3)^4 = 1
 
 ** Running python program
 #+BEGIN_SRC sh :results verbatim
