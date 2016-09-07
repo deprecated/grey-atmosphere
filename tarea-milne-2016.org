@@ -13,12 +13,12 @@ ls -l
 
 #+RESULTS:
 : total 4608
-: -rw-r--r--@ 1 will  staff  980178 Sep  7 08:56 Grey Milne Flux.html
-: -rw-r--r--@ 1 will  staff  763528 Sep  7 08:55 Grey Milne Flux.ipynb
-: -rw-r--r--@ 1 will  staff  575404 Sep  7 08:56 Grey Milne Flux.pdf
+: -rw-r--r--@ 1 will  staff  980172 Sep  7 11:34 Grey Milne Flux.html
+: -rw-r--r--@ 1 will  staff  763520 Sep  7 11:34 Grey Milne Flux.ipynb
+: -rw-r--r--@ 1 will  staff  575571 Sep  7 11:34 Grey Milne Flux.pdf
 : -rw-r--r--@ 1 will  staff   19073 Sep  6 10:58 fluxes.pdf
 : -rw-r--r--@ 1 will  staff    2482 Sep  6 10:58 fluxes.py
-: -rw-r--r--@ 1 will  staff    7169 Sep  6 13:29 tarea-milne-2016.org
+: -rw-r--r--@ 1 will  staff    7781 Sep  7 09:00 tarea-milne-2016.org
 
 * Milne equation for flux in gray atmosphere
 ** Definitions
