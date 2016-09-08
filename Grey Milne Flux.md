@@ -50,7 +50,7 @@ sns.set(context='notebook',
 
 * Fundamental "gray" assumption is that opacity is independent of frequency
 * We assume radiative equilibrium, so that the frequency-integrated mean radiative intensity is equal to the source function: $J = S$. 
-    * With further assumption of lane-parallel geometry, this means that frequency-integrated radiative flux, $H$, is constant with depth.
+    * With further assumption of plane-parallel geometry, this means that frequency-integrated radiative flux, $H$, is constant with depth.
 * We also assume *Local Thermodynamic Equilibrium* and no scattering, so that the source function at any frequency is given by the Planck function: $S_\nu = B_\nu$
 * Furthermore, we use the *Eddington approximation*, $J = 3 K$, as a closure relation for the moments of the frequency-integrated radiative transfer equation. 
 

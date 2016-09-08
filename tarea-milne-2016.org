@@ -15,15 +15,15 @@ ls -l
 #+RESULTS:
 #+begin_example
 total 4648
--rw-r--r--@  1 will  staff  980172 Sep  7 12:06 Grey Milne Flux.html
--rw-r--r--@  1 will  staff  763520 Sep  7 11:34 Grey Milne Flux.ipynb
--rw-r--r--@  1 will  staff   14667 Sep  7 12:06 Grey Milne Flux.md
--rw-r--r--@  1 will  staff  575571 Sep  7 12:06 Grey Milne Flux.pdf
+-rw-r--r--@  1 will  staff  980173 Sep  7 21:32 Grey Milne Flux.html
+-rw-r--r--@  1 will  staff  763577 Sep  7 21:30 Grey Milne Flux.ipynb
+-rw-r--r--@  1 will  staff   14668 Sep  7 21:32 Grey Milne Flux.md
+-rw-r--r--@  1 will  staff  575579 Sep  7 21:32 Grey Milne Flux.pdf
 drwxr-xr-x@ 12 will  staff     408 Sep  7 12:05 Grey Milne Flux_files
-lrwxr-xr-x   1 will  staff      20 Sep  7 11:59 README.html -> Grey Milne Flux.html
+lrwxr-xr-x   1 will  staff      18 Sep  7 12:06 README.md -> Grey Milne Flux.md
 -rw-r--r--@  1 will  staff   19073 Sep  6 10:58 fluxes.pdf
 -rw-r--r--@  1 will  staff    2482 Sep  6 10:58 fluxes.py
--rw-r--r--@  1 will  staff    7781 Sep  7 11:34 tarea-milne-2016.org
+-rw-r--r--@  1 will  staff    8064 Sep  7 12:07 tarea-milne-2016.org
 #+end_example
 
 * Milne equation for flux in gray atmosphere
