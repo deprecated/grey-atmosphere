@@ -2,3 +2,4 @@
 *.o
 *.mod
 /fortran-src/ftest
+/fortran-src/fqtest

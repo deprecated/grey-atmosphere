@@ -6,7 +6,7 @@
 !
 ! Example usage:
 ! 
-! %%fortran --opt='-O3' --extra '-L/Users/will/Dropbox/Teaching/Estelar/Tarea-03-GreyAtmos -lspecial_functions.o' -vvv
+! %%fortran --opt='-O3' --extra '/Users/will/Dropbox/Teaching/Estelar/Tarea-03-GreyAtmos/fortran-src/special_functions.o'
 !
 
 module fspecial
