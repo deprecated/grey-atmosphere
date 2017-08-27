@@ -7,7 +7,7 @@ TESTS=test-ftest test-fqtest test-fgtest
 
 .PHONY: test $(TESTS) all clean
 
-all: $(LIBRARIES) $(EXECS)
+all: $(LIBRARIES) $(EXECS) fg4py
 
 clean: 
 	rm -fr $(EXECS) $(LIBRARIES) *.o *.$(M)
@@ -18,6 +18,10 @@ clean:
 	$(F90C) $(F90FLAGS) -c $<
 .f90.$(M):  
 	$(F90C) $(F90FLAGS) -c $<
+
+# Rule to make a python extension library with f2py
+fg4py: libfgrey.so
+	f2py -L. -lfgrey -m fg4py -c fg4py.f90 
 
 # Rules for building shared libraries from the third-party code
 libspecfunc.so: special_functions.o

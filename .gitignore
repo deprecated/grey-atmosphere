@@ -4,3 +4,4 @@
 /fortran-src/ftest
 /fortran-src/fqtest
 *.so
+/fortran-src/fg4py.cpython-36m-darwin.so.dSYM/Contents/Info.plist
