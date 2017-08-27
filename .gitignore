@@ -3,3 +3,4 @@
 *.mod
 /fortran-src/ftest
 /fortran-src/fqtest
+*.so

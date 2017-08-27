@@ -1,25 +1,74 @@
 F90C=gfortran
 F90FLAGS=-O3
-EXECS=ftest fqtest
+EXECS=ftest fqtest fgtest
+LIBRARIES=libspecfunc.so libquad.so libfgrey.so
+TESTS=test-ftest test-fqtest test-fgtest
 
-all: $(EXECS)
+.PHONY: test $(TESTS) all clean
+
+all: $(LIBRARIES) $(EXECS)
 
 clean: 
-	rm -fr $(EXECS) *.o *.mod
+	rm -fr $(EXECS) $(LIBRARIES) *.o *.mod
 
 .SUFFIXES:
-.SUFFIXES: .f90 .o
+.SUFFIXES: .f90 .o .so
 .f90.o:  
 	$(F90C) $(F90FLAGS) -c $<
 
-ftest: ftest.o fspecial.o special_functions.o
-	$(F90C) $(F90FLAGS) -o $@ $^ 
+# Rules for building shared libraries from the third-party code
+libspecfunc.so: special_functions.o
+	$(F90C) $(F90FLAGS) -shared -o $@ $^ -fPIC
 
-fqtest: fqtest.o fquad.o quadpack.o
-	$(F90C) $(F90FLAGS) -o $@ $^ 
+libquad.so: quadpack.o
+	$(F90C) $(F90FLAGS) -shared -o $@ $^ -fPIC
 
-ftest.o: fspecial.o special_functions.o
-fspecial.o: special_functions.o
-fqtest.o: fquad.o quadpack.o
-fquad.o: quadpack.o
+# And make a single shared library for all the Gray Atmosphere
+# functionality.  It seems that we only need to link to this, and not
+# to libquad or libspecfunc
+libfgrey.so: fgrey.o fquad.o qp_interface.o fspecial.o
+	$(F90C) $(F90FLAGS) -shared -o $@ $^ -fPIC -L. -lquad -lspecfunc
 
+# Rules for linking executables
+ftest: ftest.o fspecial.o
+	$(F90C) $(F90FLAGS) -o $@ $^ -L. -lspecfunc
+
+fqtest: fqtest.o fquad.o qp_interface.o
+	$(F90C) $(F90FLAGS) -o $@ $^ -L. -lquad
+
+fgtest: fgtest.o		# Everything now stuffed in shared library libfgrey
+	$(F90C) $(F90FLAGS) -o $@ $^ -L. -lfgrey 
+
+# Module dependencies
+fquad.o: qp_interface.o
+fgtest.o: fgrey.o fquad.o qp_interface.o fspecial.o
+fgrey.o: fquad.o qp_interface.o fspecial.o
+ftest.o: fspecial.o
+fqtest.o: fquad.o qp_interface.o
+
+# Rules for running tests
+test: $(LIBRARIES) $(EXECS) $(TESTS)
+
+test-ftest: ftest
+	@echo
+	@echo "------------------------------------------------"
+	@echo "               Running ./ftest"
+	@echo "------------------------------------------------"
+	@./ftest
+	@echo
+
+test-fqtest: fqtest
+	@echo
+	@echo "------------------------------------------------"
+	@echo "               Running ./fqtest"
+	@echo "------------------------------------------------"
+	@./fqtest
+	@echo
+
+test-fgtest: fgtest
+	@echo
+	@echo "------------------------------------------------"
+	@echo "               Running ./fgtest"
+	@echo "------------------------------------------------"
+	@./fgtest
+	@echo
