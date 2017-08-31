@@ -41,7 +41,9 @@ sns.set(context='notebook',
         style='whitegrid', 
         palette='dark',
         font_scale=1.5,
-        color_codes=True)
+        color_codes=True,
+        rc={'figure.figsize': (8,6)},
+       )
 ```
 
 ## The gray atmosphere model
@@ -118,7 +120,7 @@ bigC = bigC.value
 print('C =', bigC)
 ```
 
-    C = 0.15398972357101687
+    C = 0.15398972882565215
 
 
 Note that we use the `.value` method so that `bigC` is a float and not a `astropy.unit.Quantity`.  Otherwise, the integration functions become very slow.

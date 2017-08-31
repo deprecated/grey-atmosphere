@@ -17,15 +17,6 @@ contains
     rslt = bigC * alpha**3 / (exp(alpha*p(tau)) - 1.0)
   end function planck
     
-!!$  function planck_11(alpha, tau) result(rslt)
-!!$    real, intent(in) :: alpha(:), tau(:)
-!!$    real :: rslt(size(alpha), size(tau))
-!!$    real :: alpha_11(size(alpha), size(tau)), p_11(size(alpha), size(tau))
-!!$    alpha_11 = spread(alpha, dim=2, ncopies=size(tau))
-!!$    p_11 = spread(p(tau), dim=1, ncopies=size(alpha))
-!!$    rslt = bigC * alpha_11**3 / (exp(alpha_11*p_11) - 1.0)
-!!$  end function planck_11
-
 end module planck_grey
 
 module milne_context
