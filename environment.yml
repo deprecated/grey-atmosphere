@@ -1,0 +1,11 @@
+name: tareas-environment
+channels:
+  - defaults
+dependencies:
+  - python
+  - numpy
+  - scipy
+  - astropy
+  - matplotlib
+  - seaborn
+
